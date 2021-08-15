@@ -41,7 +41,15 @@ fn test_owned_collection() {
         let mut c = U::new();
 
         c.extend((0..3).map(|_| Default::default()));
+<<<<<<< HEAD
         c.clear();
+=======
+        assert_eq!(c.len(), 3);
+
+        c.clear();
+        assert_eq!(c.len(), 0);
+
+>>>>>>> 23ad35fdefe59d030b12e92c40d45375aa57009d
         c.extend((0..3).map(|_| Default::default()));
         let _ = c.into_iter().collect::<Vec<_>>();
     }

@@ -1,6 +1,6 @@
 # Rust Collection traits
 
-Abstract common operations from `std` collections. 
+Abstract common operations from `std` collections. For a working sample, check `tests/group_by.rs`
 
 This crate is experimental. Better a RFC is needed to formally abstract operations (like Cpp Concept/Named requirements).
 
