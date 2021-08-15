@@ -41,23 +41,33 @@ impl<K, V, C: iter::AssociatedIterable<K, V> + iter::AssociatedIterableMut<K, V>
 
 /// Owned std associated collections (e.g., `Vec<T>`)
 pub trait OwnedCollection<T>:
-    Collection<T> + Extend<T> + IntoIterator + misc::Erasable + misc::EmptyConstructible
+    Collection<T> + Extend<T> + IntoIterator<Item = T> + misc::Erasable + misc::EmptyConstructible
 {
 }
-impl<T, C: Collection<T> + Extend<T> + Default + IntoIterator + misc::Erasable + misc::EmptyConstructible>
+impl<T, C: Collection<T> + Extend<T> + Default + IntoIterator<Item = T> + misc::Erasable + misc::EmptyConstructible>
     OwnedCollection<T> for C
 {
 }
 
 /// Owned std associated collections (e.g., `BTreeMap<K, V>`)
 pub trait OwnedAssociatedCollection<K, V>:
-    AssociatedCollection<K, V> + Extend<(K, V)> + Default + IntoIterator + misc::Erasable + misc::EmptyConstructible
+    AssociatedCollection<K, V>
+    + Extend<(K, V)>
+    + Default
+    + IntoIterator<Item = (K, V)>
+    + misc::Erasable
+    + misc::EmptyConstructible
 {
 }
 impl<
     K,
     V,
-    C: AssociatedCollection<K, V> + Extend<(K, V)> + Default + IntoIterator + misc::Erasable + misc::EmptyConstructible,
+    C: AssociatedCollection<K, V>
+        + Extend<(K, V)>
+        + Default
+        + IntoIterator<Item = (K, V)>
+        + misc::Erasable
+        + misc::EmptyConstructible,
 > OwnedAssociatedCollection<K, V> for C
 {
 }

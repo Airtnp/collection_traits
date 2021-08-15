@@ -41,11 +41,7 @@ fn test_owned_collection() {
         let mut c = U::new();
 
         c.extend((0..3).map(|_| Default::default()));
-        assert_eq!(c.len(), 3);
-
         c.clear();
-        assert_eq!(c.len(), 0);
-
         c.extend((0..3).map(|_| Default::default()));
         let _ = c.into_iter().collect::<Vec<_>>();
     }
@@ -63,13 +59,8 @@ fn test_owned_collection() {
         U: OwnedAssociatedCollection<K, V> + ExactSized<SizeType = usize>,
     >() {
         let mut c = U::new();
-
         c.extend((0..3).map(|_| (Default::default(), Default::default())));
-        assert_eq!(c.len(), 3);
-
         c.clear();
-        assert_eq!(c.len(), 0);
-
         c.extend((0..3).map(|_| (Default::default(), Default::default())));
         let _ = c.into_iter().collect::<Vec<_>>();
     }
