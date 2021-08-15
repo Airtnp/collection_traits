@@ -1,0 +1,15 @@
+[package]
+name = "collection_traits"
+version = "0.1.0"
+edition = "2018"
+authors = ["Liran Xiao <xiaolr2003@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/Airtnp/collection_traits"
+repository = "https://github.com/Airtnp/collection_traits"
+description = "Abstraction of operations in std collection types"
+keywords = ["collection", "map", "set", "iterator"]
+reader = "README.md"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
