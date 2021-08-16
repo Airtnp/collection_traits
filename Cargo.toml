@@ -1,8 +1,8 @@
 [package]
-name = "collection_traits"
+name = "std_collection_traits"
 version = "0.1.1"
 edition = "2018"
-authors = ["Liran Xiao <xiaolr2003@gmail.com>"]
+authors = ["Liran Xiao <lrxiao@umich.edu>"]
 license = "MIT"
 homepage = "https://github.com/Airtnp/collection_traits"
 repository = "https://github.com/Airtnp/collection_traits"

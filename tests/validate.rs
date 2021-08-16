@@ -1,12 +1,12 @@
 #![feature(allocator_api)]
 #![feature(associated_type_bounds)]
 
-use collection_traits::{elem::Owned, exact_size::ExactSized, *};
 use std::{
     alloc::Global,
     collections::{BTreeMap, BTreeSet, BinaryHeap, HashMap, HashSet, LinkedList, VecDeque},
     convert::TryFrom,
 };
+use std_collection_traits::{elem::Owned, exact_size::ExactSized, *};
 
 #[test]
 fn test_collection() {

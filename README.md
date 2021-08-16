@@ -1,4 +1,4 @@
-# Rust Collection traits
+# Rust Collection Traits
 
 Abstract common operations from `std` collections. For a working sample, check `tests/group_by.rs`
 
@@ -13,24 +13,22 @@ Collections in `std`:
 * misc: `BinaryHeap<T>`
 
 General Categories:
-* `Collection<T>`: All collections, excluding associated ones.
-  - `OwnedCollection<T>`: Owned collections, like `Vec<T>`
-  - `AllocatorAwareCollection<T>`: Allocator-aware collections, currently there is only `Vec<T, A>`.
-  - `CapacityAwareCollection<T>`: Capacity-aware collections, those you can reserve, create with a given amount of capacity. E.g. `HashSet::with_capacity`
-  - `{Owned}ContiguousCollection<T>`: Contiguous collections, where behaves like a contiguous region of memory. E.g. `Vec::as_slice`
-  - `{Owned}SequentialCollection<T>`: Sequential collections, where you can traverse it in one direction, and modify at the end. E.g. `VecDeque::push_back`
-  - `{Owned}DoubleEndedCollection<T>`: Double-ended collections, where you do sequential-like operations on both ends. E.g. `LinkedList<T>::pop_front`
-  - `{Owned}RandomAccessCollection<T>`: Random access collections, where you can access by indices. E.g. `VecDeque<T>::get`
-* `AssociatedCollection<K, V>`
-  - `OwnedAssociatedCollection<K, V>`: Owned associated collections.
+* `Collection`: All collections, excluding associated ones.
+  - `AllocatorAwareCollection`: Allocator-aware collections, currently there is only `Vec<T, A>`.
+  - `CapacityAwareCollection`: Capacity-aware collections, those you can reserve, create with a given amount of capacity. E.g. `HashSet::with_capacity`
+  - `ContiguousCollection`: Contiguous collections, where behaves like a contiguous region of memory. E.g. `Vec::as_slice`
+  - `SequentialCollection`: Sequential collections, where you can traverse it in one direction, and modify at the end. E.g. `VecDeque::push_back`
+  - `DoubleEndedCollection`: Double-ended collections, where you do sequential-like operations on both ends. E.g. `LinkedList<T>::pop_front`
+  - `RandomAccessCollection`: Random access collections, where you can access by indices. E.g. `VecDeque<T>::get`
+* `AssociatedCollection`
   - `AssociatedCapacityAwareCollection<K, V>`: Capacity-aware associated collections.
-  - `Set<K, S>`: Set-like collections, `HashSet<K, S>` and `BTreeSet<K>`
-  - `OrderedSe<K, S>`: Ordered set-like collections, `BTreeSet<K>`
-  - `Map<K, V, S>`: Map-like collections, `HashMap<K, V, S>` and `BTreeMap<K, V>`
-  - `OrderedMap`: Ordered map-like collections, `BTreeMap<K, V>`
+  - `Set<S>`: Set-like collections, `HashSet<K, S>` and `BTreeSet<K>`
+  - `OrderedSe<S>`: Ordered set-like collections, `BTreeSet<K>`
+  - `Map<S>`: Map-like collections, `HashMap<K, V, S>` and `BTreeMap<K, V>`
+  - `OrderedMap<S>`: Ordered map-like collections, `BTreeMap<K, V>`
 * Other miscellaneous operations
-  - `Retainable<T>` or `AssocaitedRetainable<K, V>`: Ability to retain specific elements.
-  - `Contains<T>`: Ability to test if an element is in sequence.
+  - `Retainable` or `AssocaitedRetainable<K, V>`: Ability to retain specific elements.
+  - `Contains`: Ability to test if an element is in sequence.
   - `DrainFull/DrainRange/{Associated}DrainFilter`: Ability to drain a specific amount of elements without drop the original collection.
   - `Range/RangeMut`: Ability to generate a view of original sequence.
 
@@ -42,5 +40,6 @@ General Categories:
   * `ExactSizedIterator`
   * `TrustedRandomAccess`
   * `DoubleEndedIterator`
+  * [ ] Still can't propagate requirements to uppermost traits
 * [ ] Add more collection-like types, like `&str`, `String`
 * [x] Rewrite all to assocaited types
