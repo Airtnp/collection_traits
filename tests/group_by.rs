@@ -1,17 +1,35 @@
 #![feature(impl_trait_in_bindings)]
 #![allow(incomplete_features)]
 
-use collection_traits::{Map, OwnedCollection, OwnedSequentialCollection};
+use collection_traits::{elem::Owned, Collection, Map, SequentialCollection};
 use std::collections::HashMap;
 
-pub trait GroupBy<T>: OwnedCollection<T> {
-    fn group_by<K, F: FnMut(&T) -> K, S: OwnedSequentialCollection<T>, St, M: Map<K, S, St>>(self, f: F) -> M;
+pub trait GroupBy: Collection + Owned {
+    fn group_by<
+        K,
+        F: FnMut(&Self::ElemType) -> K,
+        S: SequentialCollection<ElemType = Self::ElemType> + Owned,
+        St,
+        M: Map<St, KeyType = K, ValueType = S> + Owned,
+    >(
+        self,
+        f: F,
+    ) -> M;
 }
 
-impl<T, C: OwnedCollection<T>> GroupBy<T> for C {
-    fn group_by<K, F: FnMut(&T) -> K, S: OwnedSequentialCollection<T>, St, M: Map<K, S, St>>(self, mut f: F) -> M {
+impl<C: Collection + Owned> GroupBy for C {
+    fn group_by<
+        K,
+        F: FnMut(&Self::ElemType) -> K,
+        S: SequentialCollection<ElemType = Self::ElemType> + Owned,
+        St,
+        M: Map<St, KeyType = K, ValueType = S> + Owned,
+    >(
+        self,
+        mut f: F,
+    ) -> M {
         let mut map = M::new();
-        self.into_iter()
+        self.into_iter_owned()
             .map(|item| {
                 let key = f(&item);
                 if !map.contains_key(&key) {

@@ -1,7 +1,9 @@
+use crate::exact_size::ExactSized;
+
 /// Types that have capacity.
-pub trait CapacityAware {
+pub trait CapacityAware: ExactSized {
     /// Capacity unit
-    type CapacityType = usize;
+    type CapacityType = Self::SizeType;
 
     /// Returns the number of elements the `Self` can hold without reallocating.
     fn capacity(&self) -> Self::CapacityType;
@@ -125,12 +127,12 @@ mod impls {
         // BinaryHeap<T> doesn't have `try_reserve`
         // [@CapReserve T => std::collections::BinaryHeap<T>];
 
-        [@Cap T, S => std::collections::HashSet<T, S>];
+        [@Cap T, S: std::hash::BuildHasher => std::collections::HashSet<T, S>];
         [@CapCtor T => std::collections::HashSet<T>];
         [@CapShrink T: std::cmp::Eq | std::hash::Hash, S: std::hash::BuildHasher => std::collections::HashSet<T, S>];
         [@CapReserve T: std::cmp::Eq | std::hash::Hash, S: std::hash::BuildHasher => std::collections::HashSet<T, S>];
 
-        [@Cap K, V, S => std::collections::HashMap<K, V, S>];
+        [@Cap K, V, S: std::hash::BuildHasher => std::collections::HashMap<K, V, S>];
         [@CapCtor K, V => std::collections::HashMap<K, V>];
         [@CapShrink K: std::cmp::Eq | std::hash::Hash, V, S: std::hash::BuildHasher => std::collections::HashMap<K, V, S>];
         [@CapReserve K: std::cmp::Eq | std::hash::Hash, V, S: std::hash::BuildHasher => std::collections::HashMap<K, V, S>];

@@ -1,4 +1,5 @@
 use crate::{
+    elem::{AssociatedCollectionTrait, CollectionTrait, Mutable, Owned},
     iter::Iterable,
     misc::{AssociatedContains, Contains},
 };
@@ -6,7 +7,7 @@ use crate::{
 /// Associated collections as sets.
 ///
 /// NOTE: Ignore all `T: Borrow<Q>` since we do not have way to parameterize bounds.
-pub trait AssociatedSet<K>: Contains<K> + Iterable<K> {
+pub trait AssociatedSet: CollectionTrait + Contains + Iterable {
     /// Returns true if `self` has no elements in common with `other`
     fn is_disjoint(&self, other: &Self) -> bool;
 
@@ -17,43 +18,51 @@ pub trait AssociatedSet<K>: Contains<K> + Iterable<K> {
     fn is_superset(&self, other: &Self) -> bool;
 
     /// Removes and returns the value in `self`, if any, that is equal to the given one.
-    fn take(&mut self, value: &K) -> Option<K>;
+    fn take(&mut self, value: &Self::ElemType) -> Option<Self::ElemType>
+    where
+        Self: Owned;
 
     /// Adds a value to the set.
-    fn insert(&mut self, value: K) -> bool;
+    fn insert(&mut self, value: Self::ElemType) -> bool
+    where
+        Self: Owned;
 
     /// Returns a reference to the value in the set, if any, that is equal to the given value.
-    fn get(&self, value: &K) -> Option<&K>;
+    fn get(&self, value: &Self::ElemType) -> Option<&Self::ElemType>;
 
     /// Removes a value from `self`. Returns whether the value was present in `self`.
-    fn remove(&mut self, value: &K) -> bool;
+    fn remove(&mut self, value: &Self::ElemType) -> bool
+    where
+        Self: Owned;
 
     /// Adds a value to `self`, replacing the existing value, if any, that is equal to the given one. Returns the replaced value.
-    fn replace(&mut self, value: K) -> Option<K>;
+    fn replace(&mut self, value: Self::ElemType) -> Option<Self::ElemType>
+    where
+        Self: Owned;
 }
 
 /// Associated sets operations
 ///
 /// FIXME: Here we manually add `S` to handle lifetime requirements of `HashSet<K, S>`
-pub trait AssociatedSetOperation<K, S>: AssociatedSet<K> {
-    type DifferenceIter<'a>: Iterator<Item = &'a K>
+pub trait AssociatedSetOperation<S>: AssociatedSet {
+    type DifferenceIter<'a>: Iterator<Item = &'a Self::ElemType>
     where
-        K: 'a,
+        Self::ElemType: 'a,
         S: 'a;
 
-    type IntersectionIter<'a>: Iterator<Item = &'a K>
+    type IntersectionIter<'a>: Iterator<Item = &'a Self::ElemType>
     where
-        K: 'a,
+        Self::ElemType: 'a,
         S: 'a;
 
-    type SymmetricDifferenceIter<'a>: Iterator<Item = &'a K>
+    type SymmetricDifferenceIter<'a>: Iterator<Item = &'a Self::ElemType>
     where
-        K: 'a,
+        Self::ElemType: 'a,
         S: 'a;
 
-    type UnionIter<'a>: Iterator<Item = &'a K>
+    type UnionIter<'a>: Iterator<Item = &'a Self::ElemType>
     where
-        K: 'a,
+        Self::ElemType: 'a,
         S: 'a;
 
     /// Visits the values representing the difference.
@@ -70,83 +79,105 @@ pub trait AssociatedSetOperation<K, S>: AssociatedSet<K> {
 }
 
 /// Associated collections as ordered sets
-pub trait AssociatedSetOrd<K>: AssociatedSet<K>
+pub trait AssociatedSetOrd: AssociatedSet
 // where
 //     for<'a> <Self as Iterable<K>>::Iter<'a>: std::iter::DoubleEndedIterator
 {
     /// Moves all elements from `other` into `self`, leaving `other` empty.
-    fn append(&mut self, other: &mut Self);
+    fn append(&mut self, other: &mut Self)
+    where
+        Self: Owned;
 
     /// Returns a reference to the first value in `self`, if any.
-    fn first(&self) -> Option<&K>;
+    fn first(&self) -> Option<&Self::ElemType>;
 
     /// Removes the first value from `self` and returns it, if any.
-    fn pop_first(&mut self) -> Option<K>;
+    fn pop_first(&mut self) -> Option<Self::ElemType>
+    where
+        Self: Owned;
 
     /// Returns a reference to the last value in `self`, if any.
-    fn last(&self) -> Option<&K>;
+    fn last(&self) -> Option<&Self::ElemType>;
 
     /// Removes the last value from `self` and returns it, if any.
-    fn pop_last(&mut self) -> Option<K>;
+    fn pop_last(&mut self) -> Option<Self::ElemType>
+    where
+        Self: Owned;
 
     /// Splits the collection into two at the given key.
-    fn split_off(&mut self, key: &K) -> Self;
+    fn split_off(&mut self, key: &Self::ElemType) -> Self
+    where
+        Self: Owned;
 }
 
 /// Associated collections as key-value maps
-pub trait AssociatedMap<K, V>: AssociatedContains<K> {
+pub trait AssociatedMap: AssociatedCollectionTrait + AssociatedContains {
     /// Inserts a key-value pair into `self`.
-    fn insert(&mut self, key: K, value: V) -> Option<V>;
+    fn insert(&mut self, key: Self::KeyType, value: Self::ValueType) -> Option<Self::ValueType>
+    where
+        Self: Owned;
 
     /// Removes a key from `self`, returning the value at the key if the key was previously in the map.
-    fn remove(&mut self, key: &K) -> Option<V>;
+    fn remove(&mut self, key: &Self::KeyType) -> Option<Self::ValueType>
+    where
+        Self: Owned;
 
     /// Removes a key from `self`, returning the value at the key if the key was previously in the map.
-    fn remove_entry(&mut self, key: &K) -> Option<(K, V)>;
+    fn remove_entry(&mut self, key: &Self::KeyType) -> Option<(Self::KeyType, Self::ValueType)>
+    where
+        Self: Owned;
 
     /// Returns a reference to the value corresponding to the key.
-    fn get(&self, key: &K) -> Option<&V>;
+    fn get(&self, key: &Self::KeyType) -> Option<&Self::ValueType>;
 
     /// Returns a mutable reference to the value corresponding to the key.
-    fn get_mut(&mut self, key: &K) -> Option<&mut V>;
+    fn get_mut(&mut self, key: &Self::KeyType) -> Option<&mut Self::ValueType>
+    where
+        Self: Mutable;
 
     /// Returns the key-value pair corresponding to the supplied key.
-    fn get_key_value(&self, key: &K) -> Option<(&K, &V)>;
+    fn get_key_value(&self, key: &Self::KeyType) -> Option<(&Self::KeyType, &Self::ValueType)>;
 }
 
 /// Associated k-v maps operations
 ///
 /// FIXME: Here we manually add `S` to handle lifetime requirements of `HashMap<K, V, S>`
-pub trait AssociatedMapIter<K, V, S>: AssociatedMap<K, V> {
+pub trait AssociatedMapIter<S>: AssociatedMap {
     /// Try insert error type.
     ///
     /// Ignore `std::error::Error` because that only applies when `K: Debug, V: Debug`
     type TryInsertError<'a>
     where
-        K: 'a,
-        V: 'a,
+        Self::KeyType: 'a,
+        Self::ValueType: 'a,
         S: 'a;
 
-    type KeyIter<'a>: Iterator<Item = &'a K>
+    type KeyIter<'a>: Iterator<Item = &'a Self::KeyType>
     where
-        K: 'a,
-        V: 'a,
+        Self::KeyType: 'a,
+        Self::ValueType: 'a,
         S: 'a;
 
-    type ValueIter<'a>: Iterator<Item = &'a V>
+    type ValueIter<'a>: Iterator<Item = &'a Self::ValueType>
     where
-        K: 'a,
-        V: 'a,
+        Self::KeyType: 'a,
+        Self::ValueType: 'a,
         S: 'a;
 
-    type ValueIterMut<'a>: Iterator<Item = &'a mut V>
+    type ValueIterMut<'a>: Iterator<Item = &'a mut Self::ValueType>
     where
-        K: 'a,
-        V: 'a,
+        Self::KeyType: 'a,
+        Self::ValueType: 'a,
         S: 'a;
 
     /// Tries to insert a key-value pair into `self`, and returns a mutable reference to the value in the entry.
-    fn try_insert(&mut self, key: K, value: V) -> Result<&mut V, Self::TryInsertError<'_>>;
+    fn try_insert(
+        &mut self,
+        key: Self::KeyType,
+        value: Self::ValueType,
+    ) -> Result<&mut Self::ValueType, Self::TryInsertError<'_>>
+    where
+        Self: Owned;
 
     /// Gets an iterator over the keys of `self`.
     fn keys(&self) -> Self::KeyIter<'_>;
@@ -155,11 +186,13 @@ pub trait AssociatedMapIter<K, V, S>: AssociatedMap<K, V> {
     fn values(&self) -> Self::ValueIter<'_>;
 
     /// Gets an mutable iterator over the values of `self`.
-    fn values_mut(&mut self) -> Self::ValueIterMut<'_>;
+    fn values_mut(&mut self) -> Self::ValueIterMut<'_>
+    where
+        Self: Mutable;
 }
 
 /// Associated collections that are ordered.
-pub trait AssociatedMapOrd<K, V>: AssociatedMap<K, V>
+pub trait AssociatedMapOrd: AssociatedMap
 // where
 //     for<'a> <Self as Iterable<K>>::Iter<'a>: std::iter::DoubleEndedIterator
 //     for<'a> <Self as AssociatedMap<K, V>>::KeyIter<'a>: std::iter::DoubleEndedIterator
@@ -167,22 +200,30 @@ pub trait AssociatedMapOrd<K, V>: AssociatedMap<K, V>
 //     for<'a> <Self as AssociatedMap<K, V>>::ValueIterMut<'a>: std::iter::DoubleEndedIerator
 {
     /// Moves all elements from `other` into `self`, leaving `other` empty.
-    fn append(&mut self, other: &mut Self);
+    fn append(&mut self, other: &mut Self)
+    where
+        Self: Owned;
 
     /// Splits the collection into two at the given key.
-    fn split_off(&mut self, key: &K) -> Self;
+    fn split_off(&mut self, key: &Self::KeyType) -> Self
+    where
+        Self: Owned;
 
     /// Returns the first key-value pair in the map.
-    fn first_key_value(&self) -> Option<(&K, &V)>;
+    fn first_key_value(&self) -> Option<(&Self::KeyType, &Self::ValueType)>;
 
     /// Returns the last key-value pair in the map.
-    fn last_key_value(&self) -> Option<(&K, &V)>;
+    fn last_key_value(&self) -> Option<(&Self::KeyType, &Self::ValueType)>;
 
     /// Removes the first value from `self` and returns it, if any.
-    fn pop_first(&mut self) -> Option<(K, V)>;
+    fn pop_first(&mut self) -> Option<(Self::KeyType, Self::ValueType)>
+    where
+        Self: Owned;
 
     /// Removes the last value from `self` and returns it, if any.
-    fn pop_last(&mut self) -> Option<(K, V)>;
+    fn pop_last(&mut self) -> Option<(Self::KeyType, Self::ValueType)>
+    where
+        Self: Owned;
 }
 
 mod impls {
@@ -191,7 +232,7 @@ mod impls {
     macro_rules! assoc_impls {
         () => {};
         ([@Set <$($targ: ty),*> => $($args: ident $(: $bound: path $(| $others:path )*)?),* => $t: ty]; $($tail:tt)*) => {
-            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedSet<$($targ),*> for $t {
+            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedSet for $t {
                 fn is_disjoint(&self, other: &Self) -> bool {
                     <$t>::is_disjoint(self, other)
                 }
@@ -204,23 +245,23 @@ mod impls {
                     <$t>::is_superset(self, other)
                 }
 
-                fn take(&mut self, value: &K) -> Option<K> {
+                fn take(&mut self, value: &Self::ElemType) -> Option<Self::ElemType> {
                     <$t>::take(self, value)
                 }
 
-                fn insert(&mut self, value: K) -> bool {
+                fn insert(&mut self, value: Self::ElemType) -> bool {
                     <$t>::insert(self, value)
                 }
 
-                fn get(&self, value: &K) -> Option<&K> {
+                fn get(&self, value: &Self::ElemType) -> Option<&Self::ElemType> {
                     <$t>::get(self, value)
                 }
 
-                fn remove(&mut self, value: &K) -> bool {
+                fn remove(&mut self, value: &Self::ElemType) -> bool {
                     <$t>::remove(self, value)
                 }
 
-                fn replace(&mut self, value: K) -> Option<K> {
+                fn replace(&mut self, value: Self::ElemType) -> Option<Self::ElemType> {
                     <$t>::replace(self, value)
                 }
             }
@@ -255,28 +296,28 @@ mod impls {
             assoc_impls!($($tail)*);
         };
         ([@OrdSet <$($targ: ty),*> => $($args: ident $(: $bound: path $(| $others:path )*)?),* => $t: ty]; $($tail:tt)*) => {
-            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedSetOrd<$($targ),*> for $t {
+            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedSetOrd for $t {
                 fn append(&mut self, other: &mut Self) {
                     <$t>::append(self, other)
                 }
 
-                fn first(&self) -> Option<&K> {
+                fn first(&self) -> Option<&Self::ElemType> {
                     <$t>::first(self)
                 }
 
-                fn pop_first(&mut self) -> Option<K> {
+                fn pop_first(&mut self) -> Option<Self::ElemType> {
                     <$t>::pop_first(self)
                 }
 
-                fn last(&self) -> Option<&K> {
+                fn last(&self) -> Option<&Self::ElemType> {
                     <$t>::last(self)
                 }
 
-                fn pop_last(&mut self) -> Option<K> {
+                fn pop_last(&mut self) -> Option<Self::ElemType> {
                     <$t>::pop_last(self)
                 }
 
-                fn split_off(&mut self, key: &K) -> Self {
+                fn split_off(&mut self, key: &Self::ElemType) -> Self {
                     <$t>::split_off(self, key)
                 }
             }
@@ -311,7 +352,7 @@ mod impls {
             assoc_impls!($($tail)*);
         };
         ([@Map <$($targ: ty),*> => $($args: ident $(: $bound: path $(| $others:path )*)?),* => $t: ty]; $($tail:tt)*) => {
-            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedMap<$($targ),*> for $t {
+            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedMap for $t {
                 fn insert(&mut self, key: K, value: V) -> Option<V> {
                     <$t>::insert(self, key, value)
                 }
@@ -339,7 +380,7 @@ mod impls {
             assoc_impls!($($tail)*);
         };
         ([@OrdMap <$($targ: ty),*> => $($args: ident $(: $bound: path $(| $others:path )*)?),* => $t: ty]; $($tail:tt)*) => {
-            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedMapOrd<$($targ),*> for $t {
+            impl<$($args $(: $bound $(+ $others)*)?),*> AssociatedMapOrd for $t {
                 fn append(&mut self, other: &mut Self) {
                     <$t>::append(self, other)
                 }
@@ -372,14 +413,14 @@ mod impls {
         [@Set <K> => K: std::cmp::Eq | std::hash::Hash, S: std::hash::BuildHasher =>
             std::collections::HashSet<K, S>];
         [@Set <K> => K: std::cmp::Ord => std::collections::BTreeSet<K>];
-        [@SetOp <K, S> => K: std::cmp::Eq | std::hash::Hash, S: std::hash::BuildHasher =>
+        [@SetOp <S> => K: std::cmp::Eq | std::hash::Hash, S: std::hash::BuildHasher =>
             std::collections::HashSet<K, S>,
             std::collections::hash_set::Difference<'a, K, S>,
             std::collections::hash_set::Intersection<'a, K, S>,
             std::collections::hash_set::SymmetricDifference<'a, K, S>,
             std::collections::hash_set::Union<'a, K, S>
         ];
-        [@SetOp <K, ()> => K: std::cmp::Ord =>
+        [@SetOp <()> => K: std::cmp::Ord =>
             std::collections::BTreeSet<K>,
             std::collections::btree_set::Difference<'a, K>,
             std::collections::btree_set::Intersection<'a, K>,
@@ -392,14 +433,14 @@ mod impls {
             std::collections::HashMap<K, V, S>
         ];
         [@Map <K, V> => K: std::cmp::Ord, V => std::collections::BTreeMap<K, V>];
-        [@MapIter <K, V, S> => K: std::cmp::Eq | std::hash::Hash, V, S: std::hash::BuildHasher =>
+        [@MapIter <S> => K: std::cmp::Eq | std::hash::Hash, V, S: std::hash::BuildHasher =>
             std::collections::HashMap<K, V, S>,
             std::collections::hash_map::OccupiedError<'a, K, V>,
             std::collections::hash_map::Keys<'a, K, V>,
             std::collections::hash_map::Values<'a, K, V>,
             std::collections::hash_map::ValuesMut<'a, K, V>
         ];
-        [@MapIter <K, V, ()> => K: std::cmp::Ord, V =>
+        [@MapIter <()> => K: std::cmp::Ord, V =>
             std::collections::BTreeMap<K, V>,
             std::collections::btree_map::OccupiedError<'a, K, V>,
             std::collections::btree_map::Keys<'a, K, V>,

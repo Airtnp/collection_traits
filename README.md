@@ -36,9 +36,11 @@ General Categories:
 
 ## TODOs
 
-* [ ] Rewrite it based on `Mut/Own` marker instead of individual types
-* [ ] Find a way to constrain generic associated iterator types
+* [x] Rewrite it based on `Mut/Own` marker instead of individual types
+  * This requires some non-robust `unreached_unchecked` on default implementation.
+* [x] Find a way to constrain generic associated iterator types
   * `ExactSizedIterator`
   * `TrustedRandomAccess`
   * `DoubleEndedIterator`
 * [ ] Add more collection-like types, like `&str`, `String`
+* [x] Rewrite all to assocaited types

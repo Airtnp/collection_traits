@@ -1,6 +1,6 @@
 [package]
 name = "collection_traits"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2018"
 authors = ["Liran Xiao <xiaolr2003@gmail.com>"]
 license = "MIT"
