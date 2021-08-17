@@ -21,13 +21,13 @@ General Categories:
   - `DoubleEndedCollection`: Double-ended collections, where you do sequential-like operations on both ends. E.g. `LinkedList<T>::pop_front`
   - `RandomAccessCollection`: Random access collections, where you can access by indices. E.g. `VecDeque<T>::get`
 * `AssociatedCollection`
-  - `AssociatedCapacityAwareCollection<K, V>`: Capacity-aware associated collections.
+  - `AssociatedCapacityAwareCollection`: Capacity-aware associated collections.
   - `Set<S>`: Set-like collections, `HashSet<K, S>` and `BTreeSet<K>`
   - `OrderedSe<S>`: Ordered set-like collections, `BTreeSet<K>`
   - `Map<S>`: Map-like collections, `HashMap<K, V, S>` and `BTreeMap<K, V>`
   - `OrderedMap<S>`: Ordered map-like collections, `BTreeMap<K, V>`
 * Other miscellaneous operations
-  - `Retainable` or `AssocaitedRetainable<K, V>`: Ability to retain specific elements.
+  - `Retainable` or `AssocaitedRetainable`: Ability to retain specific elements.
   - `Contains`: Ability to test if an element is in sequence.
   - `DrainFull/DrainRange/{Associated}DrainFilter`: Ability to drain a specific amount of elements without drop the original collection.
   - `Range/RangeMut`: Ability to generate a view of original sequence.
@@ -42,4 +42,4 @@ General Categories:
   * `DoubleEndedIterator`
   * [ ] Still can't propagate requirements to uppermost traits
 * [ ] Add more collection-like types, like `&str`, `String`
-* [x] Rewrite all to assocaited types
+* [x] Rewrite all to associated types
