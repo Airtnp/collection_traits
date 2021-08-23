@@ -8,7 +8,7 @@ homepage = "https://github.com/Airtnp/collection_traits"
 repository = "https://github.com/Airtnp/collection_traits"
 description = "Abstraction of operations in std collection types"
 keywords = ["collection", "map", "set", "iterator"]
-reader = "README.md"
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

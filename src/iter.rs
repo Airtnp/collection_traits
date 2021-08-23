@@ -5,7 +5,7 @@ use crate::{
 use std::ops::RangeBounds;
 
 /// Collections that can iterate as sequence of `&T`.
-pub trait Iterable: CollectionTrait + IntoIterator {
+pub trait Iterable: CollectionTrait {
     // Check: https://internals.rust-lang.org/t/gat-and-lifetime-bounds/12422/3
     /// Immutable iterator type
     type Iter<'a>: Iterator<Item = &'a Self::ElemType>
@@ -17,7 +17,7 @@ pub trait Iterable: CollectionTrait + IntoIterator {
 }
 
 /// Collections that can iterate as sequence of `(&K, &V)`.
-pub trait AssociatedIterable: AssociatedCollectionTrait + IntoIterator {
+pub trait AssociatedIterable: AssociatedCollectionTrait {
     /// Immutable map iterator type
     type Iter<'a>: Iterator<Item = (&'a Self::KeyType, &'a Self::ValueType)>
     where
@@ -29,7 +29,7 @@ pub trait AssociatedIterable: AssociatedCollectionTrait + IntoIterator {
 }
 
 /// Collections that can iterate as sequence of `&mut T`.
-pub trait IterableMut: CollectionTrait + Mutable + IntoIterator {
+pub trait IterableMut: CollectionTrait + Mutable {
     /// Mutable iterator type
     type IterMut<'a>: Iterator<Item = &'a mut Self::ElemType>
     where
@@ -40,7 +40,7 @@ pub trait IterableMut: CollectionTrait + Mutable + IntoIterator {
 }
 
 /// Collections that can iterate as sequence of `(&K, &mut V)`.
-pub trait AssociatedIterableMut: AssociatedCollectionTrait + Mutable + IntoIterator {
+pub trait AssociatedIterableMut: AssociatedCollectionTrait + Mutable {
     /// Mutable map iterator type
     type IterMut<'a>: Iterator<Item = (&'a Self::KeyType, &'a mut Self::ValueType)>
     where

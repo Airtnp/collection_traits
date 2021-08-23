@@ -43,3 +43,4 @@ General Categories:
   * [ ] Still can't propagate requirements to uppermost traits
 * [ ] Add more collection-like types, like `&str`, `String`
 * [x] Rewrite all to associated types
+* [ ] Add `T: Borrow<Q>` related types?
